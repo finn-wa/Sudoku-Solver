@@ -1,8 +1,16 @@
-public class Grid {
-    private final int[][] cells; // 9x9 array of grid cells
+package grid;
 
-    public Grid(int[][] cells) {
-        this.cells = cells;
+public class Grid {
+    private final Cell[][] cells; // 9x9 array of grid cells
+
+    public Grid(int[][] values) {
+        cells = new Cell[9][9];
+        // convert integer array into array of Cells
+        for(int row = 0; row < 9; row ++) {
+            for(int col = 0; col < 9; col++) {
+                cells[row][col] = new Cell(values[row][col]);
+            }
+        }
     }
 
     /**
@@ -11,8 +19,8 @@ public class Grid {
      * @param col: Column of cell to be returned
      * @return: Value of cell
      */
-    public int get(int row, int col) {
-        return cells[row - 1][col - 1];
+    public Cell get(int row, int col) {
+        return cells[row][col];
     }
 
     public void print() {

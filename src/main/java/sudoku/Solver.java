@@ -1,3 +1,7 @@
+package sudoku;
+
+import grid.Grid;
+
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -11,6 +15,9 @@ public class Solver {
             loadGrids(gridFile);
         } catch (IOException e) {
             e.printStackTrace();
+        }
+        for(Grid grid : grids) {
+            solve(grid);
         }
     }
 
@@ -33,7 +40,7 @@ public class Solver {
             for(int row = 0; row < 9; row ++) {
                 String line = scan.nextLine();
                 for(int col = 0; col < 9; col++) {
-                    cells[row][col] = Integer.parseInt(""+line.charAt(col));
+                    cells[row][col] = Integer.parseInt(String.valueOf(line.charAt(col)));
                 }
             }
             Grid grid = new Grid(cells);
@@ -42,4 +49,7 @@ public class Solver {
         }
     }
 
+    private void solve(Grid grid) {
+
+    }
 }
