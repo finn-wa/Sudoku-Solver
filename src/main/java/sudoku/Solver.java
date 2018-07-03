@@ -53,6 +53,7 @@ public class Solver {
     private void solve(Grid grid) {
         calculateCandidates(grid);
         soleCandidate(grid);
+        onlyCell(grid);
     }
 
     /**
@@ -77,6 +78,11 @@ public class Solver {
     }
 
     private void calculateCandidates(Grid grid) {
+
+    }
+
+
+    private void onlyCell(Grid grid) {
 
     }
 
