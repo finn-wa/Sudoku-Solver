@@ -1,7 +1,7 @@
 package grid;
 
 public class Grid {
-    private final Cell[][] cells; // 9x9 array of grid cells
+    public Cell[][] cells; // 9x9 array of grid cells
 
     public Grid(int[][] values) {
         cells = new Cell[9][9];
@@ -11,6 +11,7 @@ public class Grid {
                 cells[row][col] = new Cell(values[row][col]);
             }
         }
+        generateGroups();
     }
 
     /**
@@ -34,4 +35,5 @@ public class Grid {
         }
         System.out.println(out.toString());
     }
+
 }

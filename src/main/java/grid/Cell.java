@@ -6,10 +6,37 @@ package grid;
  * the cell is unsolved, and false if it is solved (only one possible value).
  */
 public class Cell {
-    public boolean[] possibilities;
+    public boolean[] candidates;
 
     public Cell(int value) {
-        possibilities = new boolean[10];
-        possibilities[value] = true;
+        candidates = new boolean[10];
+        candidates[value] = true;
+    }
+
+    public void solve(int value) {
+        for(int index = 0; index <= 9; index++) {
+            if(index == value) {
+                candidates[index] = true;
+            } else {
+                candidates[index] = false;
+            }
+        }
+    }
+
+    public boolean isSolved() {
+        return !candidates[0];
+    }
+
+    public int getNumCandidates() {
+        if(isSolved()) {
+            return 1;
+        }
+        int count = 0;
+        for(int i = 1; i <= 9; i++) {
+            if(candidates[i]) {
+                count++;
+            }
+        }
+        return count;
     }
 }

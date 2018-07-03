@@ -1,5 +1,6 @@
 package sudoku;
 
+import grid.Cell;
 import grid.Grid;
 
 import java.io.File;
@@ -50,6 +51,33 @@ public class Solver {
     }
 
     private void solve(Grid grid) {
+        calculateCandidates(grid);
+        soleCandidate(grid);
+    }
+
+    /**
+     * When a cell only has one candidate, then it must be the solution.
+     * This method loops through each cell in the grid and checks for sole candidates.
+     */
+    private void soleCandidate(Grid grid) {
+        for(int row = 0; row < 9; row ++) {
+            for(int col = 0; col < 9; col++) {
+                Cell cell = grid.cells[row][col];
+                if(!cell.isSolved() && cell.getNumCandidates() == 1) {
+                    // find sole candidate
+                    for(int i = 1; i <= 9; i++) {
+                        if(cell.candidates[i]) {
+                            cell.solve(i);
+                            return;
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    private void calculateCandidates(Grid grid) {
 
     }
+
 }
