@@ -1,7 +1,5 @@
 package grid;
 
-import java.sql.SQLOutput;
-
 /**
  * Contains possible values for the cell in the format of a boolean array.
  * Each index represents a possible value for the cell if set to true.
@@ -9,7 +7,7 @@ import java.sql.SQLOutput;
  * is solved.
  */
 public class Cell {
-    private boolean[] candidates;
+    public boolean[] candidates;
     public Group row;
     public Group col;
     public Group box;

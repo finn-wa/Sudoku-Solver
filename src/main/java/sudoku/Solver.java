@@ -9,7 +9,7 @@ import java.util.ArrayList;
 import java.util.Scanner;
 
 public class Solver {
-    public ArrayList<Grid> grids;
+    private ArrayList<Grid> grids;
 
     public Solver(File gridFile) {
         try {
@@ -83,25 +83,20 @@ public class Solver {
                 if(cell.isSolved()) {
                     continue;
                 }
-                boolean[] newCandidates = new boolean[10];
-                for(int i = 0; i < 10; i++) {
-                    newCandidates[i] = true;
-                }
                 Cell[] rowCells = cell.row.cells;
                 Cell[] colCells = cell.col.cells;
                 Cell[] boxCells = cell.box.cells;
                 for(int i = 0; i < 9; i++) {
                     if(rowCells[i].isSolved()) {
-                        newCandidates[rowCells[i].getSolution()] = false;
+                        cell.candidates[rowCells[i].getSolution()] = false;
                     }
                     if(colCells[i].isSolved()) {
-                        newCandidates[colCells[i].getSolution()] = false;
+                        cell.candidates[colCells[i].getSolution()] = false;
                     }
                     if(boxCells[i].isSolved()) {
-                        newCandidates[boxCells[i].getSolution()] = false;
+                        cell.candidates[boxCells[i].getSolution()] = false;
                     }
                 }
-                cell.setCandidates(newCandidates);
             }
         }
     }
