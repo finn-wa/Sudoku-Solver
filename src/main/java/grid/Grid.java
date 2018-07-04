@@ -5,8 +5,10 @@ public class Grid {
     public Group[] rows;
     public Group[] cols;
     public Group[] boxes;
+    private int numSolved;
 
     public Grid(int[][] values) {
+        numSolved = 0;
         generateCells(values);
         generateGroups();
     }
@@ -16,7 +18,7 @@ public class Grid {
         // convert integer array into array of Cells
         for(int row = 0; row < 9; row ++) {
             for(int col = 0; col < 9; col++) {
-                cells[row][col] = new Cell(values[row][col]);
+                cells[row][col] = new Cell(this, values[row][col]);
             }
         }
     }
@@ -58,23 +60,49 @@ public class Grid {
         out.append("ROWS\n");
         for(Group row : rows) {
             for(Cell cell : row.cells) {
-                out.append(cell.toString());
+                out.append(cell);
             }
             out.append('\n');
         }
         out.append("COLS\n");
         for(Group col : cols) {
             for(Cell cell : col.cells) {
-                out.append(cell.toString());
+                out.append(cell);
             }
             out.append('\n');
         }
         out.append("BOXES\n");
         for(Group box : boxes) {
             for(Cell cell : box.cells) {
-                out.append(cell.toString());
+                out.append(cell);
             }
             out.append('\n');
+        }
+        System.out.println(out);
+    }
+
+    public boolean isSolved() {
+        return numSolved == 81;
+    }
+
+    public int getNumSolved() {
+        return this.numSolved;
+    }
+
+    public void incrementNumSolved() {
+        if(numSolved >= 81) {
+            throw new IllegalStateException("Can't solve more than 81 cells");
+        }
+        numSolved++;
+    }
+
+    public void print() {
+        StringBuilder out = new StringBuilder();
+        for(int row = 0; row < 9; row ++) {
+            for(int col = 0; col < 9; col++) {
+                out.append(cells[row][col]);
+            }
+            out.append("\n");
         }
         System.out.println(out.toString());
     }
@@ -87,18 +115,6 @@ public class Grid {
      */
     public Cell get(int row, int col) {
         return cells[row][col];
-    }
-
-    public void print() {
-        StringBuilder out = new StringBuilder();
-        for(int row = 0; row < 9; row ++) {
-            for(int col = 0; col < 9; col++) {
-                out.append(cells[row][col]);
-                out.append(' ');
-            }
-            out.append("\n");
-        }
-        System.out.println(out.toString());
     }
 
 }

@@ -6,7 +6,7 @@ package grid;
  */
 public class Group {
 
-    public enum Type{ROW, COL, BOX};
+    public enum Type {ROW, COL, BOX};
 
     public final Type type;
     public final Cell[] cells;
@@ -14,6 +14,21 @@ public class Group {
     public Group(Type type, Cell[] cells) {
         this.type = type;
         this.cells = cells;
+        // set link back to group for each cell
+        switch (type) {
+            case ROW:
+                for(Cell cell : cells) {
+                    cell.setRow(this);
+                }
+            case COL:
+                for(Cell cell : cells) {
+                    cell.setCol(this);
+                }
+            case BOX:
+                for(Cell cell : cells) {
+                    cell.setBox(this);
+                }
+        }
     }
 
 }

@@ -20,9 +20,8 @@ public class Solver {
     }
 
     public static void main(String[] args) {
-        Solver solver = new Solver(new File("data/grids.txt"));
-        solver.grids.get(0).print();
-        solver.grids.get(0).printGroups();
+        Solver solver = new Solver(new File("data/grid1.txt"));
+        solver.solveAll();
     }
 
     /**
@@ -36,7 +35,7 @@ public class Solver {
         Scanner scan = new Scanner(gridFile);
         while(scan.hasNext()) {
             int[][] cells = new int[9][9];
-            System.out.println(scan.nextLine()); // scan grid title
+            scan.nextLine(); // scan grid title
             for(int row = 0; row < 9; row ++) {
                 String line = scan.nextLine();
                 for(int col = 0; col < 9; col++) {
@@ -55,14 +54,47 @@ public class Solver {
     }
 
     public void solve(Grid grid) {
-        calculateCandidates(grid);
-        soleCandidate(grid);
-        onlyCell(grid);
+        while(!grid.isSolved()) {
+            calculateCandidates(grid);
+            soleCandidate(grid);
+            System.out.println("Number solved cells: "+grid.getNumSolved());
+        }
+    }
+
+    private void calculateCandidates(Grid grid) {
+        for(int row = 0; row < 9; row++) {
+            for(int col = 0; col < 9; col++) {
+                Cell cell = grid.cells[row][col];
+                if(cell.isSolved()) {
+                    continue;
+                }
+                boolean[] newCandidates = new boolean[10];
+                for(int i = 0; i < 10; i++) {
+                    newCandidates[i] = true;
+                }
+                Cell[] rowCells = cell.row.cells;
+                Cell[] colCells = cell.col.cells;
+                Cell[] boxCells = cell.box.cells;
+                for(int i = 0; i < 9; i++) {
+                    if(rowCells[i].isSolved()) {
+                        newCandidates[rowCells[i].getSolution()] = false;
+                    }
+                    if(colCells[i].isSolved()) {
+                        newCandidates[colCells[i].getSolution()] = false;
+                    }
+                    if(boxCells[i].isSolved()) {
+                        newCandidates[boxCells[i].getSolution()] = false;
+                    }
+                }
+                cell.setCandidates(newCandidates);
+            }
+        }
     }
 
     /**
      * When a cell only has one candidate, then it must be the solution.
-     * This method loops through each cell in the grid and checks for sole candidates.
+     * This method loops through each unsolved cell in the grid and checks
+     * for sole candidates.
      */
     private void soleCandidate(Grid grid) {
         for(int row = 0; row < 9; row ++) {
@@ -71,23 +103,15 @@ public class Solver {
                 if(!cell.isSolved() && cell.getNumCandidates() == 1) {
                     // find sole candidate
                     for(int i = 1; i <= 9; i++) {
-                        if(cell.candidates[i]) {
-                            cell.solve(i);
-                            return;
+                        if(cell.getCandidates()[i]) {
+                            cell.setSolution(i);
+                            break;
                         }
                     }
+                } else if(cell.getNumCandidates() == 0) {
+                    System.out.println("Failed to solve puzzle");
                 }
             }
         }
     }
-
-    private void calculateCandidates(Grid grid) {
-
-    }
-
-
-    private void onlyCell(Grid grid) {
-
-    }
-
 }
