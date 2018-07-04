@@ -9,7 +9,7 @@ import java.util.ArrayList;
 import java.util.Scanner;
 
 public class Solver {
-    private ArrayList<Grid> grids;
+    public ArrayList<Grid> grids;
 
     public Solver(File gridFile) {
         try {
@@ -17,13 +17,12 @@ public class Solver {
         } catch (IOException e) {
             e.printStackTrace();
         }
-        for(Grid grid : grids) {
-            solve(grid);
-        }
     }
 
     public static void main(String[] args) {
-        new Solver(new File("data/grids.txt"));
+        Solver solver = new Solver(new File("data/grids.txt"));
+        solver.grids.get(0).print();
+        solver.grids.get(0).printGroups();
     }
 
     /**
@@ -45,12 +44,17 @@ public class Solver {
                 }
             }
             Grid grid = new Grid(cells);
-            grid.print();
             grids.add(grid);
         }
     }
 
-    private void solve(Grid grid) {
+    public void solveAll() {
+        for(Grid grid : grids) {
+            solve(grid);
+        }
+    }
+
+    public void solve(Grid grid) {
         calculateCandidates(grid);
         soleCandidate(grid);
         onlyCell(grid);

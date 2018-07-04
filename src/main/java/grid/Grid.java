@@ -36,14 +36,47 @@ public class Grid {
             cols[col] = new Group(Group.Type.COL, column);
         }
         boxes = new Group[9];
-        Cell[] box = new Cell[9];
+        int index = 0;
         for(int col = 0; col < 9; col += 3) {
             for(int row = 0; row < 9; row += 3) {
-                int index = 0;
-               // box[index] = row
-                        // christ alive
+                Cell[] box = new Cell[9];
+                int boxIndex = 0;
+                for(int colRow = 0; colRow < 3; colRow++) {
+                    for(int boxRow = 0; boxRow < 3; boxRow++) {
+                        box[boxIndex] = cells[row+boxRow][col+colRow];
+                        boxIndex++;
+                    }
+                }
+                boxes[index] = new Group(Group.Type.BOX, box);
+                index++;
             }
         }
+    }
+
+    public void printGroups() {
+        StringBuilder out = new StringBuilder();
+        out.append("ROWS\n");
+        for(Group row : rows) {
+            for(Cell cell : row.cells) {
+                out.append(cell.toString());
+            }
+            out.append('\n');
+        }
+        out.append("COLS\n");
+        for(Group col : cols) {
+            for(Cell cell : col.cells) {
+                out.append(cell.toString());
+            }
+            out.append('\n');
+        }
+        out.append("BOXES\n");
+        for(Group box : boxes) {
+            for(Cell cell : box.cells) {
+                out.append(cell.toString());
+            }
+            out.append('\n');
+        }
+        System.out.println(out.toString());
     }
 
     /**

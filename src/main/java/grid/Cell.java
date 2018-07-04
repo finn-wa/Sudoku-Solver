@@ -39,4 +39,21 @@ public class Cell {
         }
         return count;
     }
+
+    @Override
+    public String toString() {
+        StringBuilder out = new StringBuilder();
+        out.append('[');
+        for(int index = 0; index <= 9; index++) {
+            if(candidates[index]) {
+                out.append(index);
+                out.append(',');
+            }
+        }
+        // delete last comma
+        if(out.length() > 2) {
+            out.deleteCharAt(out.length() - 1);
+        }
+        return out.toString();
+    }
 }

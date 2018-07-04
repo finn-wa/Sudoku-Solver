@@ -9,7 +9,7 @@ public class Group {
     public enum Type{ROW, COL, BOX};
 
     public final Type type;
-    private Cell[] cells;
+    public final Cell[] cells;
 
     public Group(Type type, Cell[] cells) {
         this.type = type;
