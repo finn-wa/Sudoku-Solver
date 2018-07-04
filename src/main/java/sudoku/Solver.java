@@ -20,7 +20,7 @@ public class Solver {
     }
 
     public static void main(String[] args) {
-        Solver solver = new Solver(new File("data/grid1.txt"));
+        Solver solver = new Solver(new File("data/grids.txt"));
         solver.solveAll();
     }
 
@@ -48,17 +48,32 @@ public class Solver {
     }
 
     public void solveAll() {
+        int numSolved = 0;
+        int count = 1;
         for(Grid grid : grids) {
-            solve(grid);
+            System.out.println("====================");
+            System.out.println("Puzzle "+count);
+            if(solve(grid)) numSolved++;
+            count++;
         }
+        System.out.println("Solved "+numSolved+"/"+grids.size()+" grids.");
     }
 
-    public void solve(Grid grid) {
+    public boolean solve(Grid grid) {
+        int count = 1;
         while(!grid.isSolved()) {
+            int numSolved = grid.getNumSolved();
+            System.out.println(count + ". Solved cells: "+numSolved);
             calculateCandidates(grid);
             soleCandidate(grid);
-            System.out.println("Number solved cells: "+grid.getNumSolved());
+            if(!(grid.getNumSolved() > numSolved)) { // no more cells solved
+                return false;
+            }
+            count++;
         }
+        System.out.println(count + ". Solved cells: 81");
+        System.out.println("Puzzle solved.");
+        return true;
     }
 
     private void calculateCandidates(Grid grid) {

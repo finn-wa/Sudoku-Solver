@@ -106,15 +106,4 @@ public class Grid {
         }
         System.out.println(out.toString());
     }
-
-    /**
-     * Returns value in cell at row (1-9), col (1-9)
-     * @param row: Row of cell to be returned
-     * @param col: Column of cell to be returned
-     * @return: Value of cell
-     */
-    public Cell get(int row, int col) {
-        return cells[row][col];
-    }
-
 }
