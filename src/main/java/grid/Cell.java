@@ -26,10 +26,16 @@ public class Cell {
     }
 
     public void eliminateCandidate(int candidate) {
+        if(isSolved()) {
+            throw new IllegalStateException("Cannot edit candidates of solved cell");
+        }else if(candidate < 1 || 9 < candidate) {
+            throw new IllegalArgumentException("Candidate must be a number between 1 and 9, candidate was "+candidate);
+        };
         candidates[candidate] = false;
         if(getNumCandidates() == 0) {
-            System.err.println("All candidates eliminated.");
+            //System.err.println("All candidates eliminated.");
             grid.setSolvingFailed();
+            throw new IllegalStateException("All candidates eliminated.");
         }
     }
 
@@ -59,7 +65,7 @@ public class Cell {
         if(isSolved()) {
             throw new IllegalStateException("Cannot change cell's solution once solved.");
         }else if(value < 1 || 9 < value) {
-            throw new IllegalArgumentException("Solution can only be numbers 1-9, value was "+value);
+            throw new IllegalArgumentException("Solution must be a number between 1 and 9, value was "+value);
         }
         for(int index = 0; index <= 9; index++) {
             // set all candidates to false bar the solution

@@ -22,7 +22,7 @@ public class Solver {
     }
 
     public static void main(String[] args) {
-        Solver solver = new Solver(new File("data/grid1.txt"));
+        Solver solver = new Solver(new File("data/grids.txt"));
         solver.solveAll();
     }
 
@@ -66,11 +66,10 @@ public class Solver {
             System.out.println(count + ". Solved cells: "+numSolved);
             // eliminate candidates
             basicElimination(grid);
-            // find new solved cells
-            //soleCandidate(grid);
+            soleCandidate(grid);
             uniqueCandidate(grid);
             if(grid.getNumSolved() <= numSolved || grid.getSolvingFailed()) { // no more cells solved
-                System.err.println("Cannot solve sudoku.");
+                System.out.println("Cannot solve sudoku.");
                 return false;
             }
             count++;
@@ -127,6 +126,7 @@ public class Solver {
                     for(int i = 1; i <= 9; i++) {
                         if(cell.getCandidates()[i]) {
                             cell.setSolution(i);
+                            basicElimination(grid);
                             break;
                         }
                     }
@@ -161,11 +161,9 @@ public class Solver {
                 // check for single occurrences of candidates
                 for(Integer candidate : occurrences.keySet()) {
                     if(occurrences.get(candidate).size() == 1) {
-                        // TODO: figure out why solved cells are being added to map
                         if(!occurrences.get(candidate).get(0).isSolved()) {
                             occurrences.get(candidate).get(0).setSolution(candidate);
-                        }else {
-                            System.err.println('s');
+                            basicElimination(grid);
                         }
                     }
                 }
