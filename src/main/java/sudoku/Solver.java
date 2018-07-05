@@ -67,7 +67,7 @@ public class Solver {
             // eliminate candidates
             basicElimination(grid);
             // find new solved cells
-            soleCandidate(grid);
+            //soleCandidate(grid);
             uniqueCandidate(grid);
             if(grid.getNumSolved() <= numSolved || grid.getSolvingFailed()) { // no more cells solved
                 System.err.println("Cannot solve sudoku.");
@@ -164,6 +164,8 @@ public class Solver {
                         // TODO: figure out why solved cells are being added to map
                         if(!occurrences.get(candidate).get(0).isSolved()) {
                             occurrences.get(candidate).get(0).setSolution(candidate);
+                        }else {
+                            System.err.println('s');
                         }
                     }
                 }

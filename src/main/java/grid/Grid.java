@@ -61,55 +61,6 @@ public class Grid {
         allGroups = new Group[][]{rows, cols, boxes};
     }
 
-    public void printGroups() {
-        StringBuilder out = new StringBuilder();
-        out.append("ROWS\n");
-        for(Group row : rows) {
-            for(Cell cell : row.getCells()) {
-                out.append(cell);
-            }
-            out.append('\n');
-        }
-        out.append("COLS\n");
-        for(Group col : cols) {
-            for(Cell cell : col.getCells()) {
-                out.append(cell);
-            }
-            out.append('\n');
-        }
-        out.append("BOXES\n");
-        for(Group box : boxes) {
-            for(Cell cell : box.getCells()) {
-                out.append(cell);
-            }
-            out.append('\n');
-        }
-        System.out.println(out);
-    }
-
-    public boolean isSolved() {
-        return numSolved == 81;
-    }
-
-    public int getNumSolved() {
-        return this.numSolved;
-    }
-
-    public void incrementNumSolved() {
-        if(numSolved >= 81) {
-            throw new IllegalStateException("Can't solve more than 81 cells");
-        }
-        numSolved++;
-    }
-
-    protected void setSolvingFailed() {
-        this.solvingFailed = true;
-    }
-
-    public boolean getSolvingFailed() {
-        return this.solvingFailed;
-    }
-
     public void print() {
         StringBuilder out = new StringBuilder();
         out.append(name);
@@ -123,6 +74,27 @@ public class Grid {
         System.out.println(out.toString());
     }
 
+    public boolean isSolved() {
+        return numSolved == 81;
+    }
+
+    public void incrementNumSolved() {
+        if(numSolved >= 81) {
+            throw new IllegalStateException("Can't solve more than 81 cells");
+        }
+        numSolved++;
+    }
+
+    public int getNumSolved() { return this.numSolved; }
+
+    protected void setSolvingFailed() {
+        this.solvingFailed = true;
+    }
+
+    public boolean getSolvingFailed() {
+        return this.solvingFailed;
+    }
+
     public String getName() {
         return name;
     }
@@ -131,17 +103,11 @@ public class Grid {
         return cells;
     }
 
-    public Group[] getRows() {
-        return rows;
-    }
+    public Group[] getRows() { return rows; }
 
-    public Group[] getCols() {
-        return cols;
-    }
+    public Group[] getCols() { return cols; }
 
-    public Group[] getBoxes() {
-        return boxes;
-    }
+    public Group[] getBoxes() { return boxes; }
 
     public Group[][] getAllGroups() {
         return allGroups;

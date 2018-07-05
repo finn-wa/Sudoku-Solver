@@ -15,19 +15,18 @@ public class Group {
         this.type = type;
         this.cells = cells;
         // set link back to group for each cell
-        switch (type) {
-            case ROW:
-                for(Cell cell : cells) {
-                    cell.setRow(this);
-                }
-            case COL:
-                for(Cell cell : cells) {
-                    cell.setCol(this);
-                }
-            case BOX:
-                for(Cell cell : cells) {
-                    cell.setBox(this);
-                }
+        if(type == Type.ROW) {
+            for (Cell cell : cells) {
+                cell.setRow(this);
+            }
+        }else if(type == Type.COL) {
+            for (Cell cell : cells) {
+                cell.setCol(this);
+            }
+        }else if(type == Type.BOX) {
+            for (Cell cell : cells) {
+                cell.setBox(this);
+            }
         }
     }
 

@@ -25,6 +25,32 @@ public class Cell {
         }
     }
 
+    public void eliminateCandidate(int candidate) {
+        candidates[candidate] = false;
+        if(getNumCandidates() == 0) {
+            System.err.println("All candidates eliminated.");
+            grid.setSolvingFailed();
+        }
+    }
+
+    @Override
+    public String toString() {
+        StringBuilder out = new StringBuilder();
+        out.append('[');
+        for(int index = 1; index <= 9; index++) {
+            if(candidates[index]) {
+                out.append(index);
+                out.append(',');
+            }
+        }
+        // delete last comma
+        if(out.length() > 1) {
+            out.deleteCharAt(out.length() - 1);
+        }
+        out.append(']');
+        return out.toString();
+    }
+
     public boolean isSolved() {
         return !candidates[0];
     }
@@ -71,36 +97,7 @@ public class Cell {
         return this.candidates;
     }
 
-    public void eliminateCandidate(int candidate) {
-        candidates[candidate] = false;
-        if(getNumCandidates() == 0) {
-            System.err.println("All candidates eliminated.");
-            grid.setSolvingFailed();
-        }
-    }
-
-    @Override
-    public String toString() {
-        StringBuilder out = new StringBuilder();
-        out.append('[');
-        for(int index = 1; index <= 9; index++) {
-            if(candidates[index]) {
-                out.append(index);
-                out.append(',');
-            }
-        }
-        // delete last comma
-        if(out.length() > 1) {
-            out.deleteCharAt(out.length() - 1);
-        }
-        out.append(']');
-        return out.toString();
-    }
-
     protected void setRow(Group row) {
-        if(row == null) {
-            throw new IllegalArgumentException("Cannot set row to null");
-        }
         if(this.row != null) {
             throw new IllegalStateException("Row already set");
         }
