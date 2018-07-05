@@ -8,8 +8,8 @@ public class Group {
 
     public enum Type {ROW, COL, BOX};
 
-    public final Type type;
-    public final Cell[] cells;
+    private final Type type;
+    private final Cell[] cells;
 
     public Group(Type type, Cell[] cells) {
         this.type = type;
@@ -31,4 +31,7 @@ public class Group {
         }
     }
 
+    public Cell[] getCells() {
+        return cells;
+    }
 }

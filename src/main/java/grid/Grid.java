@@ -1,16 +1,21 @@
 package grid;
 
 public class Grid {
-    public Cell[][] cells; // 9x9 array of grid cells
-    public Group[] rows;
-    public Group[] cols;
-    public Group[] boxes;
+    private final String name;
+    private Cell[][] cells; // 9x9 array of grid cells
+    private Group[] rows;
+    private Group[] cols;
+    private Group[] boxes;
+    private Group[][] allGroups; // list containing rows, cols, boxes
     private int numSolved;
+    private boolean solvingFailed;
 
-    public Grid(int[][] values) {
+    public Grid(String name, int[][] values) {
+        this.name = name;
         numSolved = 0;
         generateCells(values);
         generateGroups();
+        solvingFailed = false;
     }
 
     private void generateCells(int[][] values) {
@@ -31,11 +36,11 @@ public class Grid {
         cols = new Group[9];
         for(int col = 0; col < 9; col++) {
             // build new array to hold column
-            Cell[] column = new Cell[9];
+            Cell[] colGroup = new Cell[9];
             for(int row = 0; row < 9; row++) {
-                column[row] = cells[row][col];
+                colGroup[row] = cells[row][col];
             }
-            cols[col] = new Group(Group.Type.COL, column);
+            cols[col] = new Group(Group.Type.COL, colGroup);
         }
         boxes = new Group[9];
         int index = 0;
@@ -53,27 +58,28 @@ public class Grid {
                 index++;
             }
         }
+        allGroups = new Group[][]{rows, cols, boxes};
     }
 
     public void printGroups() {
         StringBuilder out = new StringBuilder();
         out.append("ROWS\n");
         for(Group row : rows) {
-            for(Cell cell : row.cells) {
+            for(Cell cell : row.getCells()) {
                 out.append(cell);
             }
             out.append('\n');
         }
         out.append("COLS\n");
         for(Group col : cols) {
-            for(Cell cell : col.cells) {
+            for(Cell cell : col.getCells()) {
                 out.append(cell);
             }
             out.append('\n');
         }
         out.append("BOXES\n");
         for(Group box : boxes) {
-            for(Cell cell : box.cells) {
+            for(Cell cell : box.getCells()) {
                 out.append(cell);
             }
             out.append('\n');
@@ -96,8 +102,18 @@ public class Grid {
         numSolved++;
     }
 
+    protected void setSolvingFailed() {
+        this.solvingFailed = true;
+    }
+
+    public boolean getSolvingFailed() {
+        return this.solvingFailed;
+    }
+
     public void print() {
         StringBuilder out = new StringBuilder();
+        out.append(name);
+        out.append('\n');
         for(int row = 0; row < 9; row ++) {
             for(int col = 0; col < 9; col++) {
                 out.append(cells[row][col]);
@@ -105,5 +121,29 @@ public class Grid {
             out.append("\n");
         }
         System.out.println(out.toString());
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public Cell[][] getCells() {
+        return cells;
+    }
+
+    public Group[] getRows() {
+        return rows;
+    }
+
+    public Group[] getCols() {
+        return cols;
+    }
+
+    public Group[] getBoxes() {
+        return boxes;
+    }
+
+    public Group[][] getAllGroups() {
+        return allGroups;
     }
 }

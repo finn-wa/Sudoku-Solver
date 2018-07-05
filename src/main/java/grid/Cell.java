@@ -7,35 +7,22 @@ package grid;
  * is solved.
  */
 public class Cell {
-    public boolean[] candidates;
-    public Group row;
-    public Group col;
-    public Group box;
+    private boolean[] candidates;
+    private Group row;
+    private Group col;
+    private Group box;
     private Grid grid;
 
     public Cell(Grid grid, int value) {
         this.grid = grid;
         candidates = new boolean[10];
-        if(value == 0) { // not solved
-            // set all numbers to possible candidates
-            for(int i = 0; i <= 9; i++) {
-                candidates[i] = true;
-            }
-        } else {
+        // set all numbers to possible candidates
+        for(int i = 0; i <= 9; i++) {
+            candidates[i] = true;
+        }
+        if(value != 0) {
             setSolution(value);
         }
-    }
-
-    protected void setRow(Group row) {
-        this.row = row;
-    }
-
-    protected void setCol(Group col) {
-        this.col = col;
-    }
-
-    protected void setBox(Group box) {
-        this.box = box;
     }
 
     public boolean isSolved() {
@@ -43,6 +30,11 @@ public class Cell {
     }
 
     public void setSolution(int value) {
+        if(isSolved()) {
+            throw new IllegalStateException("Cannot change cell's solution once solved.");
+        }else if(value < 1 || 9 < value) {
+            throw new IllegalArgumentException("Solution can only be numbers 1-9, value was "+value);
+        }
         for(int index = 0; index <= 9; index++) {
             // set all candidates to false bar the solution
             candidates[index] = (index == value);
@@ -79,11 +71,12 @@ public class Cell {
         return this.candidates;
     }
 
-    public void setCandidates(boolean[] newCandidates) {
-        if(newCandidates.length != 10) {
-            throw new IllegalArgumentException("Length of candidates array must be 10");
+    public void eliminateCandidate(int candidate) {
+        candidates[candidate] = false;
+        if(getNumCandidates() == 0) {
+            System.err.println("All candidates eliminated.");
+            grid.setSolvingFailed();
         }
-        this.candidates = newCandidates;
     }
 
     @Override
@@ -102,5 +95,41 @@ public class Cell {
         }
         out.append(']');
         return out.toString();
+    }
+
+    protected void setRow(Group row) {
+        if(row == null) {
+            throw new IllegalArgumentException("Cannot set row to null");
+        }
+        if(this.row != null) {
+            throw new IllegalStateException("Row already set");
+        }
+        this.row = row;
+    }
+
+    protected void setCol(Group col) {
+        if(this.col != null) {
+            throw new IllegalStateException("Column already set");
+        }
+        this.col = col;
+    }
+
+    protected void setBox(Group box) {
+        if(this.box != null) {
+            throw new IllegalStateException("Box already set");
+        }
+        this.box = box;
+    }
+
+    public Group getRow() {
+        return row;
+    }
+
+    public Group getCol() {
+        return col;
+    }
+
+    public Group getBox() {
+        return box;
     }
 }
