@@ -11,7 +11,8 @@ import java.util.HashMap;
 import java.util.Scanner;
 
 public class Solver {
-    private ArrayList<Grid> grids;
+
+    public ArrayList<Grid> grids;
 
     public Solver(File gridFile) {
         try {
@@ -49,6 +50,9 @@ public class Solver {
         }
     }
 
+    /**
+     * Calls solve() on all grids in the grids field
+     */
     public void solveAll() {
         int numSolved = 0;
         for(Grid grid : grids) {
@@ -59,15 +63,18 @@ public class Solver {
         System.out.println("Solved "+numSolved+"/"+grids.size()+" grids.");
     }
 
+    /**
+     * @param grid: Grid which method attempts to solve.
+     * @return true if method solves grid, false if method fails to solve grid
+     */
     public boolean solve(Grid grid) {
         int count = 1;
         while(!grid.isSolved()) {
             int numSolved = grid.getNumSolved();
             System.out.println(count + ". Solved cells: "+numSolved);
             // eliminate candidates
-            basicElimination(grid);
-            soleCandidate(grid);
-            uniqueCandidate(grid);
+            eliminateCandidates(grid);
+            findSolutions(grid);
             if(grid.getNumSolved() <= numSolved || grid.getSolvingFailed()) { // no more cells solved
                 System.out.println("Cannot solve sudoku.");
                 return false;
@@ -80,12 +87,30 @@ public class Solver {
     }
 
     /**
-     * Uses the basic rule of sudoku to eliminate potential candidates:
+     * Calls each candidate elimination method in turn.
+     * @param grid: Grid from which candidates will be eliminated
+     */
+    public void eliminateCandidates(Grid grid) {
+        basicElimination(grid);
+        lockedCandidates(grid);
+    }
+
+    /**
+     * Calls each solution-finding method in turn.
+     * @param grid: Grid in which to find solutions
+     */
+    public void findSolutions(Grid grid) {
+        soleCandidate(grid);
+        uniqueCandidate(grid);
+    }
+
+    /**
+     * Uses the basic rule of sudoku to eliminate candidates:
      * if a number is in the same row, column, or box as a given cell, then
      * the cell's value cannot be that number.
-     * @param grid: The current grid being solved
+     * @param grid: Grid from which candidates will be eliminated
      */
-    private void basicElimination(Grid grid) {
+    public void basicElimination(Grid grid) {
         for(int row = 0; row < 9; row++) {
             for(int col = 0; col < 9; col++) {
                 Cell cell = grid.getCells()[row][col];
@@ -111,13 +136,25 @@ public class Solver {
     }
 
     /**
+     * Uses the locked candidates rule to eliminate candidates:
+     * Sometimes a candidate within a box is restricted to one row or column.
+     * Since one of these cells must contain that specific candidate, the
+     * candidate can safely be excluded from the remaining cells in that
+     * row or column outside of the box.
+     * @param grid: Grid from which candidates will be eliminated
+     */
+    private void lockedCandidates(Grid grid) {
+        
+    }
+
+    /**
      * Finds solved cells using the sole candidate rule:
      * When a cell only has one candidate, then it must be the solution.
      * This method loops through each unsolved cell in the grid and checks
      * for sole candidates.
-     * @param grid: The current grid being solved
+     * @param grid: Grid in which to find solutions
      */
-    private void soleCandidate(Grid grid) {
+    public void soleCandidate(Grid grid) {
         for(int row = 0; row < 9; row ++) {
             for(int col = 0; col < 9; col++) {
                 Cell cell = grid.getCells()[row][col];
@@ -140,9 +177,9 @@ public class Solver {
      * If a number can only be put in one cell in a group, then that cell's
      * value is guaranteed to be that number. This method searches for candidates
      * that only exist in one cell in a group and solves those cells.
-     * @param grid: The current grid being solved
+     * @param grid: Grid in which to find solutions
      */
-    private void uniqueCandidate(Grid grid) {
+    public void uniqueCandidate(Grid grid) {
         for(Group[] category : grid.getAllGroups()) {
             for(Group group : category) {
                 // key = candidate, value = list of cells with candidate

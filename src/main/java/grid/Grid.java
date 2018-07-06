@@ -18,6 +18,10 @@ public class Grid {
         solvingFailed = false;
     }
 
+    /**
+     * Generates Cell objects from 2D array of integer values
+     * @param values: Integer values of Cell objects
+     */
     private void generateCells(int[][] values) {
         cells = new Cell[9][9];
         // convert integer array into array of Cells
@@ -28,7 +32,14 @@ public class Grid {
         }
     }
 
+    /**
+     * Generates row, column, and box groups from the cells field.
+     * These groups are stored in arrays in the rows, cols, and boxes fields.
+     */
     private void generateGroups() {
+        if(cells == null) {
+            throw new IllegalStateException("Must call generateCells() before calling this method.");
+        }
         rows = new Group[9];
         for(int i = 0; i < 9; i++) {
             rows[i] = new Group(Group.Type.ROW, cells[i]);
@@ -61,7 +72,8 @@ public class Grid {
         allGroups = new Group[][]{rows, cols, boxes};
     }
 
-    public void print() {
+    @Override
+    public String toString() {
         StringBuilder out = new StringBuilder();
         out.append(name);
         out.append('\n');
@@ -71,7 +83,7 @@ public class Grid {
             }
             out.append("\n");
         }
-        System.out.println(out.toString());
+        return out.toString();
     }
 
     public boolean isSolved() {
@@ -102,12 +114,6 @@ public class Grid {
     public Cell[][] getCells() {
         return cells;
     }
-
-    public Group[] getRows() { return rows; }
-
-    public Group[] getCols() { return cols; }
-
-    public Group[] getBoxes() { return boxes; }
 
     public Group[][] getAllGroups() {
         return allGroups;

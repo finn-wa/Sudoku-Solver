@@ -25,6 +25,10 @@ public class Cell {
         }
     }
 
+    /**
+     * Remove candidate from list of candidates (stored in field)
+     * @param candidate: candidate to remove
+     */
     public void eliminateCandidate(int candidate) {
         if(isSolved()) {
             throw new IllegalStateException("Cannot edit candidates of solved cell");
