@@ -1,5 +1,7 @@
 package grid;
 
+import java.util.ArrayList;
+
 /**
  * Contains possible values for the cell in the format of a boolean array.
  * Each index represents a possible value for the cell if set to true.
@@ -103,8 +105,17 @@ public class Cell {
         return count;
     }
 
-    public boolean[] getCandidates() {
-        return this.candidates;
+    /**
+     * @return ArrayList of candidates
+     */
+    public ArrayList<Integer> getCandidates() {
+        ArrayList<Integer> candidateList = new ArrayList<>();
+        for(int i = 1; i <= 9; i++) {
+            if(candidates[i]){
+                candidateList.add(i);
+            }
+        }
+        return candidateList;
     }
 
     protected void setRow(Group row) {

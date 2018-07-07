@@ -92,7 +92,7 @@ public class Solver {
      */
     public void eliminateCandidates(Grid grid) {
         basicElimination(grid);
-        lockedCandidates(grid);
+        lockedCandidatesElimination(grid);
     }
 
     /**
@@ -100,8 +100,8 @@ public class Solver {
      * @param grid: Grid in which to find solutions
      */
     public void findSolutions(Grid grid) {
-        soleCandidate(grid);
-        uniqueCandidate(grid);
+        soleCandidateSolving(grid);
+        uniqueCandidateSolving(grid);
     }
 
     /**
@@ -143,8 +143,10 @@ public class Solver {
      * row or column outside of the box.
      * @param grid: Grid from which candidates will be eliminated
      */
-    private void lockedCandidates(Grid grid) {
-        
+    private void lockedCandidatesElimination(Grid grid) {
+        //get subsets
+        //if subset containsAll map values for a given candidate, then
+        //eliminate candidates from row/col of subset
     }
 
     /**
@@ -154,19 +156,13 @@ public class Solver {
      * for sole candidates.
      * @param grid: Grid in which to find solutions
      */
-    public void soleCandidate(Grid grid) {
+    public void soleCandidateSolving(Grid grid) {
         for(int row = 0; row < 9; row ++) {
             for(int col = 0; col < 9; col++) {
                 Cell cell = grid.getCells()[row][col];
                 if(!cell.isSolved() && cell.getNumCandidates() == 1) {
-                    // find sole candidate
-                    for(int i = 1; i <= 9; i++) {
-                        if(cell.getCandidates()[i]) {
-                            cell.setSolution(i);
-                            basicElimination(grid);
-                            break;
-                        }
-                    }
+                    cell.setSolution(cell.getCandidates().get(0));
+                    eliminateCandidates(grid);
                 }
             }
         }
@@ -179,32 +175,39 @@ public class Solver {
      * that only exist in one cell in a group and solves those cells.
      * @param grid: Grid in which to find solutions
      */
-    public void uniqueCandidate(Grid grid) {
+    public void uniqueCandidateSolving(Grid grid) {
         for(Group[] category : grid.getAllGroups()) {
             for(Group group : category) {
                 // key = candidate, value = list of cells with candidate
-                HashMap<Integer, ArrayList<Cell>> occurrences = new HashMap<>();
-                for(Cell cell : group.getCells()) {
-                    if(cell.isSolved()) continue;
-                    for(int candidate = 1; candidate <= 9; candidate++) {
-                        if(cell.getCandidates()[candidate]) {
-                            if(!occurrences.containsKey(candidate)) {
-                                occurrences.put(candidate, new ArrayList<>());
-                            }
-                            occurrences.get(candidate).add(cell);
-                        }
-                    }
-                }
+                HashMap<Integer, ArrayList<Cell>> map = getCandidateCellMap(group.getCells());
                 // check for single occurrences of candidates
-                for(Integer candidate : occurrences.keySet()) {
-                    if(occurrences.get(candidate).size() == 1) {
-                        if(!occurrences.get(candidate).get(0).isSolved()) {
-                            occurrences.get(candidate).get(0).setSolution(candidate);
-                            basicElimination(grid);
-                        }
+                for(Integer candidate : map.keySet()) {
+                    if(map.get(candidate).size() == 1) {
+                        map.get(candidate).get(0).setSolution(candidate);
+                        eliminateCandidates(grid);
                     }
                 }
             }
         }
+    }
+
+    /**
+     * Note: ignores solved cells.
+     * @param cells: Array of cells to search for candidates
+     * @return: HashMap where each key is a candidate and each value is a list of
+     * cells with the key as a candidate.
+     */
+    private HashMap<Integer, ArrayList<Cell>> getCandidateCellMap(Cell[] cells) {
+        HashMap<Integer, ArrayList<Cell>> map = new HashMap<>();
+        for(Cell cell : cells) {
+            if(cell.isSolved()) continue;
+            for(Integer candidate : cell.getCandidates()) {
+                if(!map.containsKey(candidate)) {
+                    map.put(candidate, new ArrayList<>());
+                }
+                map.get(candidate).add(cell);
+            }
+        }
+        return map;
     }
 }
