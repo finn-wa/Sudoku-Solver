@@ -143,9 +143,33 @@ public class Solver {
      * @param grid: Grid from which candidates will be eliminated
      */
     public static void lockedCandidatesElimination(Grid grid) {
-        //get subsets
-        //if subset containsAll map values for a given candidate, then
-        //eliminate candidates from row/col of subset
+        //get intersections
+        //if intersection containsAll map values for a given candidate, then
+        //eliminate candidates from row/col of intersections
+
+        // box candidate elimination
+        Group[] boxes = grid.getBoxes();
+        // get intersection of boxes with rows
+        for(Group box : boxes) {
+            HashMap<Integer, ArrayList<Cell>> map = getCandidateCellMap(box.getCells());
+            Group[] boxRows = new Group[]{
+                    box.getCells().get(0).getRow(),
+                    box.getCells().get(3).getRow(),
+                    box.getCells().get(6).getRow()};
+            for(Group row : boxRows) {
+                ArrayList<Cell> intersection = new ArrayList<>(box.getCells());
+                intersection.retainAll(row.getCells());
+                for(Integer candidate : map.keySet()) {
+                    if(intersection.containsAll(map.get(candidate))) {
+                        // TODO: remove candidates from row: make method in Group that does this
+                        // TODO:
+                        // also make a method in cell that calls eliminateCandidate(solution) on each
+                        // cell returned by getRow, getCol, and getBox. then soleCandidateSolving
+                        // won't have to be called every time a cell is solved
+                    }
+                }
+            }
+        }
     }
 
     /**

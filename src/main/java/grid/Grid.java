@@ -115,6 +115,12 @@ public class Grid {
         return cells;
     }
 
+    public Group[] getBoxes() { return boxes; }
+
+    public Group[] getCols() { return cols; }
+
+    public Group[] getRows() { return rows; }
+
     public Group[][] getAllGroups() {
         return allGroups;
     }
