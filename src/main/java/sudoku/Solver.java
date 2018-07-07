@@ -12,19 +12,11 @@ import java.util.Scanner;
 
 public class Solver {
 
-    public ArrayList<Grid> grids;
-
-    public Solver(File gridFile) {
-        try {
-            loadGrids(gridFile);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
-
     public static void main(String[] args) {
-        Solver solver = new Solver(new File("data/grids.txt"));
-        solver.solveAll();
+        try {
+            ArrayList<Grid> grids = loadGrids(new File("data/grids.txt"));
+            solveAll(grids);
+        } catch (IOException e) { e.printStackTrace(); }
     }
 
     /**
@@ -33,8 +25,8 @@ public class Solver {
      *                then each row as a 9-digit long number on the following 9 lines.
      * @throws IOException: If file reading fails.
      */
-    private void loadGrids(File gridFile) throws IOException {
-        grids = new ArrayList<>();
+    public static ArrayList<Grid> loadGrids(File gridFile) throws IOException {
+        ArrayList<Grid> grids = new ArrayList<>();
         Scanner scan = new Scanner(gridFile);
         while(scan.hasNext()) {
             int[][] cells = new int[9][9];
@@ -48,12 +40,14 @@ public class Solver {
             Grid grid = new Grid(name, cells);
             grids.add(grid);
         }
+        return grids;
     }
 
     /**
-     * Calls solve() on all grids in the grids field
+     * Calls solve() on all grids in list
+     * @param grids: List of grids to solve
      */
-    public void solveAll() {
+    public static void solveAll(ArrayList<Grid> grids) {
         int numSolved = 0;
         for(Grid grid : grids) {
             System.out.println(grid.getName());
@@ -67,7 +61,7 @@ public class Solver {
      * @param grid: Grid which method attempts to solve.
      * @return true if method solves grid, false if method fails to solve grid
      */
-    public boolean solve(Grid grid) {
+    public static boolean solve(Grid grid) {
         int count = 1;
         while(!grid.isSolved()) {
             int numSolved = grid.getNumSolved();
@@ -90,7 +84,7 @@ public class Solver {
      * Calls each candidate elimination method in turn.
      * @param grid: Grid from which candidates will be eliminated
      */
-    public void eliminateCandidates(Grid grid) {
+    public static void eliminateCandidates(Grid grid) {
         basicElimination(grid);
         lockedCandidatesElimination(grid);
     }
@@ -99,7 +93,7 @@ public class Solver {
      * Calls each solution-finding method in turn.
      * @param grid: Grid in which to find solutions
      */
-    public void findSolutions(Grid grid) {
+    public static void findSolutions(Grid grid) {
         soleCandidateSolving(grid);
         uniqueCandidateSolving(grid);
     }
@@ -110,7 +104,7 @@ public class Solver {
      * the cell's value cannot be that number.
      * @param grid: Grid from which candidates will be eliminated
      */
-    public void basicElimination(Grid grid) {
+    public static void basicElimination(Grid grid) {
         for(int row = 0; row < 9; row++) {
             for(int col = 0; col < 9; col++) {
                 Cell cell = grid.getCells()[row][col];
@@ -143,7 +137,7 @@ public class Solver {
      * row or column outside of the box.
      * @param grid: Grid from which candidates will be eliminated
      */
-    private void lockedCandidatesElimination(Grid grid) {
+    public static void lockedCandidatesElimination(Grid grid) {
         //get subsets
         //if subset containsAll map values for a given candidate, then
         //eliminate candidates from row/col of subset
@@ -156,7 +150,7 @@ public class Solver {
      * for sole candidates.
      * @param grid: Grid in which to find solutions
      */
-    public void soleCandidateSolving(Grid grid) {
+    public static void soleCandidateSolving(Grid grid) {
         for(int row = 0; row < 9; row ++) {
             for(int col = 0; col < 9; col++) {
                 Cell cell = grid.getCells()[row][col];
@@ -175,7 +169,7 @@ public class Solver {
      * that only exist in one cell in a group and solves those cells.
      * @param grid: Grid in which to find solutions
      */
-    public void uniqueCandidateSolving(Grid grid) {
+    public static void uniqueCandidateSolving(Grid grid) {
         for(Group[] category : grid.getAllGroups()) {
             for(Group group : category) {
                 // key = candidate, value = list of cells with candidate
@@ -197,7 +191,7 @@ public class Solver {
      * @return: HashMap where each key is a candidate and each value is a list of
      * cells with the key as a candidate.
      */
-    private HashMap<Integer, ArrayList<Cell>> getCandidateCellMap(Cell[] cells) {
+    private static HashMap<Integer, ArrayList<Cell>> getCandidateCellMap(Cell[] cells) {
         HashMap<Integer, ArrayList<Cell>> map = new HashMap<>();
         for(Cell cell : cells) {
             if(cell.isSolved()) continue;
