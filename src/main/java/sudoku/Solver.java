@@ -69,7 +69,8 @@ public class Solver {
             // eliminate candidates
             eliminateCandidates(grid);
             findSolutions(grid);
-            if(grid.getNumSolved() <= numSolved || grid.getSolvingFailed()) { // no more cells solved
+            if(grid.getNumSolved() <= numSolved || grid.getSolvingFailed()) {
+                // no cells solved in last loop, cannot progress from here
                 System.out.println("Cannot solve sudoku.");
                 return false;
             }
@@ -111,18 +112,22 @@ public class Solver {
                 if(cell.isSolved()) {
                     continue;
                 }
-                Cell[] rowCells = cell.getRow().getCells();
-                Cell[] colCells = cell.getCol().getCells();
-                Cell[] boxCells = cell.getBox().getCells();
-                for(int i = 0; i < 9; i++) {
-                    if(rowCells[i].isSolved()) {
-                        cell.eliminateCandidate(rowCells[i].getSolution());
+                ArrayList<Cell> rowCells = cell.getRow().getCells();
+                for(Cell rowCell : rowCells) {
+                    if(rowCell.isSolved()) {
+                        cell.eliminateCandidate(rowCell.getSolution());
                     }
-                    if(colCells[i].isSolved()) {
-                        cell.eliminateCandidate(colCells[i].getSolution());
+                }
+                ArrayList<Cell> colCells = cell.getCol().getCells();
+                for(Cell colCell : colCells) {
+                    if(colCell.isSolved()) {
+                        cell.eliminateCandidate(colCell.getSolution());
                     }
-                    if(boxCells[i].isSolved()) {
-                        cell.eliminateCandidate(boxCells[i].getSolution());
+                }
+                ArrayList<Cell> boxCells = cell.getBox().getCells();
+                for(Cell boxCell : boxCells) {
+                    if(boxCell.isSolved()) {
+                        cell.eliminateCandidate(boxCell.getSolution());
                     }
                 }
             }
@@ -187,11 +192,11 @@ public class Solver {
 
     /**
      * Note: ignores solved cells.
-     * @param cells: Array of cells to search for candidates
+     * @param cells: ArrayList of cells to search for candidates
      * @return: HashMap where each key is a candidate and each value is a list of
      * cells with the key as a candidate.
      */
-    private static HashMap<Integer, ArrayList<Cell>> getCandidateCellMap(Cell[] cells) {
+    private static HashMap<Integer, ArrayList<Cell>> getCandidateCellMap(ArrayList<Cell> cells) {
         HashMap<Integer, ArrayList<Cell>> map = new HashMap<>();
         for(Cell cell : cells) {
             if(cell.isSolved()) continue;
