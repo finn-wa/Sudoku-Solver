@@ -14,7 +14,7 @@ public class Solver {
 
     public static void main(String[] args) {
         try {
-            ArrayList<Grid> grids = loadGrids(new File("data/grid1.txt"));
+            ArrayList<Grid> grids = loadGrids(new File("data/grids.txt"));
             solveAll(grids);
         } catch (IOException e) { e.printStackTrace(); }
     }
@@ -85,7 +85,7 @@ public class Solver {
      * @param grid: Grid from which candidates will be eliminated
      */
     public static void eliminateCandidates(Grid grid) {
-        //lockedCandidatesElimination(grid);
+        lockedCandidatesElimination(grid);
     }
 
     /**
@@ -99,36 +99,71 @@ public class Solver {
 
     /**
      * Uses the locked candidates rule to eliminate candidates:
+     * See Locked Candidates 1 & 2: http://www.angusj.com/sudoku/hints.php)
+     * 1. Row/Column candidate elimination:
      * Sometimes a candidate within a box is restricted to one row or column.
      * Since one of these cells must contain that specific candidate, the
      * candidate can safely be excluded from the remaining cells in that
      * row or column outside of the box.
+     * 2. Box candidate elimination:
+     * Sometimes a candidate within a row or column is restricted to one box.
+     * Since one of these cells must contain that specific candidate, the
+     * candidate can safely be excluded from the remaining cells in the box.
+     *
      * @param grid: Grid from which candidates will be eliminated
      */
     public static void lockedCandidatesElimination(Grid grid) {
-        //get intersections
-        //if intersection containsAll map values for a given candidate, then
-        //eliminate candidates from row/col of intersections
-
-        // box candidate elimination
-        Group[] boxes = grid.getBoxes();
-        // get intersection of boxes with rows
-        for(Group box : boxes) {
-            HashMap<Integer, ArrayList<Cell>> map = getCandidateCellMap(box.getCells());
-            Group[] boxRows = new Group[]{
+        // row/column candidate elimination
+        for(Group box : grid.getBoxes()) {
+            Group[] boxRows = new Group[] {
                     box.getCells().get(0).getRow(),
                     box.getCells().get(3).getRow(),
                     box.getCells().get(6).getRow()};
-            for(Group row : boxRows) {
-                ArrayList<Cell> intersection = new ArrayList<>(box.getCells());
-                intersection.retainAll(row.getCells());
-                for(Integer candidate : map.keySet()) {
-                    if(intersection.containsAll(map.get(candidate))) {
-                        // TODO: remove candidates from row: make method in Group that does this
-                        // TODO:
-                        // also make a method in cell that calls eliminateCandidate(solution) on each
-                        // cell returned by getRow, getCol, and getBox. then soleCandidateSolving
-                        // won't have to be called every time a cell is solved
+            intersectionElimination(box, boxRows);
+            Group[] boxCols = new Group[] {
+                    box.getCells().get(0).getCol(),
+                    box.getCells().get(1).getCol(),
+                    box.getCells().get(2).getCol()};
+            intersectionElimination(box, boxCols);
+        }
+        // box candidate elimination
+        for(Group row : grid.getRows()) {
+            Group[] rowBoxes = new Group[] {
+                    row.getCells().get(0).getBox(),
+                    row.getCells().get(3).getBox(),
+                    row.getCells().get(6).getBox()};
+            intersectionElimination(row, rowBoxes);
+        }
+        for(Group col : grid.getCols()) {
+            Group[] colBoxes = new Group[] {
+                    col.getCells().get(0).getBox(),
+                    col.getCells().get(3).getBox(),
+                    col.getCells().get(6).getBox()};
+            intersectionElimination(col, colBoxes);
+        }
+    }
+
+    /**
+     * Used by lockedCandidatesElimination method to eliminate candidates.
+     * @param group: Main group. Can be a row, column, or box.
+     * @param subGroups: The groups contained within the main group. If the main
+     *                 group is a box, these will be the three rows or columns within
+     *                 that box. If the main group is a row or column, then these will
+     *                 be the three boxes contained by that row or column.
+     */
+    private static void intersectionElimination(Group group, Group[] subGroups) {
+        HashMap<Integer, ArrayList<Cell>> map = getCandidateCellMap(group.getCells());
+        for(Group subGroup : subGroups) {
+            ArrayList<Cell> intersection = new ArrayList<>(group.getCells());
+            intersection.retainAll(subGroup.getCells());
+            for(Integer candidate : map.keySet()) {
+                if(intersection.containsAll(map.get(candidate))) {
+                    // candidate is restricted to one row in box
+                    // can be eliminated from the rest of the row
+                    ArrayList<Cell> groupOutsideBox = new ArrayList<>(subGroup.getCells());
+                    groupOutsideBox.removeAll(intersection);
+                    for(Cell c : groupOutsideBox) {
+                        if(!c.isSolved()) c.eliminateCandidate(candidate);
                     }
                 }
             }

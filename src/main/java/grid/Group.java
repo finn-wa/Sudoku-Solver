@@ -9,7 +9,7 @@ import java.util.Arrays;
  */
 public class Group {
 
-    public enum Type {ROW, COL, BOX};
+    public enum Type {ROW, COL, BOX}
 
     private final Type type;
     private final ArrayList<Cell> cells;
