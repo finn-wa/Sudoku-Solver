@@ -14,13 +14,7 @@ public class Group {
     private final Type type;
     private final ArrayList<Cell> cells;
 
-    public Group(Type type, ArrayList<Cell> cells) {
-        this.type = type;
-        this.cells = cells;
-        addGroupToCells();
-    }
-
-    public Group(Type type, Cell[] cells) {
+    Group(Type type, Cell[] cells) {
         this.type = type;
         this.cells = new ArrayList<>(Arrays.asList(cells));
         addGroupToCells();
@@ -41,6 +35,18 @@ public class Group {
         }else if(type == Type.BOX) {
             for (Cell cell : cells) {
                 cell.setBox(this);
+            }
+        }
+    }
+
+    /**
+     * Eliminates candidate from every unsolved cell in group.
+     * @param candidate: candidate to eliminate
+     */
+    public void eliminateCandidate(int candidate) {
+        for(Cell cell : cells) {
+            if(!cell.isSolved()) {
+                cell.eliminateCandidate(candidate);
             }
         }
     }

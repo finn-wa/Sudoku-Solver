@@ -18,13 +18,22 @@ public class Cell {
     public Cell(Grid grid, int value) {
         this.grid = grid;
         candidates = new boolean[10];
-        // set all numbers to possible candidates
-        for(int i = 0; i <= 9; i++) {
-            candidates[i] = true;
+        if(value == 0) {
+            // set all numbers to possible candidates
+            for (int i = 0; i <= 9; i++) {
+                candidates[i] = true;
+            }
+        }else {
+            // set all candidates to false bar the solution
+            for(int index = 0; index <= 9; index++) {
+                candidates[index] = (index == value);
+            }
+            grid.incrementNumSolved();
         }
-        if(value != 0) {
-            setSolution(value);
-        }
+    }
+
+    public boolean isSolved() {
+        return !candidates[0];
     }
 
     /**
@@ -36,35 +45,12 @@ public class Cell {
             throw new IllegalStateException("Cannot edit candidates of solved cell");
         }else if(candidate < 1 || 9 < candidate) {
             throw new IllegalArgumentException("Candidate must be a number between 1 and 9, candidate was "+candidate);
-        };
+        }
         candidates[candidate] = false;
         if(getNumCandidates() == 0) {
-            //System.err.println("All candidates eliminated.");
             grid.setSolvingFailed();
             throw new IllegalStateException("All candidates eliminated.");
         }
-    }
-
-    @Override
-    public String toString() {
-        StringBuilder out = new StringBuilder();
-        out.append('[');
-        for(int index = 1; index <= 9; index++) {
-            if(candidates[index]) {
-                out.append(index);
-                out.append(',');
-            }
-        }
-        // delete last comma
-        if(out.length() > 1) {
-            out.deleteCharAt(out.length() - 1);
-        }
-        out.append(']');
-        return out.toString();
-    }
-
-    public boolean isSolved() {
-        return !candidates[0];
     }
 
     public void setSolution(int value) {
@@ -77,7 +63,20 @@ public class Cell {
             // set all candidates to false bar the solution
             candidates[index] = (index == value);
         }
+        eliminateSolutionFromGroups();
         grid.incrementNumSolved();
+    }
+
+    /**
+     * Removes solution as candidate from this cell's row, column, and box
+     */
+    public void eliminateSolutionFromGroups() {
+        int solution = getSolution();
+        if(solution != 0) {
+            row.eliminateCandidate(solution);
+            col.eliminateCandidate(solution);
+            box.eliminateCandidate(solution);
+        }
     }
 
     /**
@@ -139,15 +138,27 @@ public class Cell {
         this.box = box;
     }
 
-    public Group getRow() {
-        return row;
-    }
+    public Group getRow() { return row; }
 
-    public Group getCol() {
-        return col;
-    }
+    public Group getCol() { return col; }
 
-    public Group getBox() {
-        return box;
+    public Group getBox() { return box; }
+
+    @Override
+    public String toString() {
+        StringBuilder out = new StringBuilder();
+        out.append('[');
+        for(int index = 1; index <= 9; index++) {
+            if(candidates[index]) {
+                out.append(index);
+                out.append(',');
+            }
+        }
+        // delete last comma
+        if(out.length() > 1) {
+            out.deleteCharAt(out.length() - 1);
+        }
+        out.append(']');
+        return out.toString();
     }
 }

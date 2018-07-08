@@ -15,6 +15,7 @@ public class Grid {
         numSolved = 0;
         generateCells(values);
         generateGroups();
+        initialElimination();
         solvingFailed = false;
     }
 
@@ -70,6 +71,20 @@ public class Grid {
             }
         }
         allGroups = new Group[][]{rows, cols, boxes};
+    }
+
+    /**
+     * To be called after groups are created. Calls eliminateSolutionFromGroups()
+     * on every cell, which eliminates solved cells' values from their groups'
+     * candidates. After this initial elimination, eliminateSolutionFromGroups()
+     * is called whenever a solution is found.
+     */
+    private void initialElimination() {
+        for(Cell[] row : cells) {
+            for(Cell cell : row) {
+                cell.eliminateSolutionFromGroups();
+            }
+        }
     }
 
     @Override

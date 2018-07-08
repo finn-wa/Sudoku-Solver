@@ -14,7 +14,7 @@ public class Solver {
 
     public static void main(String[] args) {
         try {
-            ArrayList<Grid> grids = loadGrids(new File("data/grids.txt"));
+            ArrayList<Grid> grids = loadGrids(new File("data/grid1.txt"));
             solveAll(grids);
         } catch (IOException e) { e.printStackTrace(); }
     }
@@ -66,7 +66,6 @@ public class Solver {
         while(!grid.isSolved()) {
             int numSolved = grid.getNumSolved();
             System.out.println(count + ". Solved cells: "+numSolved);
-            // eliminate candidates
             eliminateCandidates(grid);
             findSolutions(grid);
             if(grid.getNumSolved() <= numSolved || grid.getSolvingFailed()) {
@@ -86,8 +85,7 @@ public class Solver {
      * @param grid: Grid from which candidates will be eliminated
      */
     public static void eliminateCandidates(Grid grid) {
-        basicElimination(grid);
-        lockedCandidatesElimination(grid);
+        //lockedCandidatesElimination(grid);
     }
 
     /**
@@ -97,41 +95,6 @@ public class Solver {
     public static void findSolutions(Grid grid) {
         soleCandidateSolving(grid);
         uniqueCandidateSolving(grid);
-    }
-
-    /**
-     * Uses the basic rule of sudoku to eliminate candidates:
-     * if a number is in the same row, column, or box as a given cell, then
-     * the cell's value cannot be that number.
-     * @param grid: Grid from which candidates will be eliminated
-     */
-    public static void basicElimination(Grid grid) {
-        for(int row = 0; row < 9; row++) {
-            for(int col = 0; col < 9; col++) {
-                Cell cell = grid.getCells()[row][col];
-                if(cell.isSolved()) {
-                    continue;
-                }
-                ArrayList<Cell> rowCells = cell.getRow().getCells();
-                for(Cell rowCell : rowCells) {
-                    if(rowCell.isSolved()) {
-                        cell.eliminateCandidate(rowCell.getSolution());
-                    }
-                }
-                ArrayList<Cell> colCells = cell.getCol().getCells();
-                for(Cell colCell : colCells) {
-                    if(colCell.isSolved()) {
-                        cell.eliminateCandidate(colCell.getSolution());
-                    }
-                }
-                ArrayList<Cell> boxCells = cell.getBox().getCells();
-                for(Cell boxCell : boxCells) {
-                    if(boxCell.isSolved()) {
-                        cell.eliminateCandidate(boxCell.getSolution());
-                    }
-                }
-            }
-        }
     }
 
     /**
@@ -176,19 +139,24 @@ public class Solver {
      * Finds solved cells using the sole candidate rule:
      * When a cell only has one candidate, then it must be the solution.
      * This method loops through each unsolved cell in the grid and checks
-     * for sole candidates.
+     * for sole candidates. It will continue looking for sole candidates to
+     * solve until there are none left.
      * @param grid: Grid in which to find solutions
      */
     public static void soleCandidateSolving(Grid grid) {
-        for(int row = 0; row < 9; row ++) {
-            for(int col = 0; col < 9; col++) {
-                Cell cell = grid.getCells()[row][col];
-                if(!cell.isSolved() && cell.getNumCandidates() == 1) {
-                    cell.setSolution(cell.getCandidates().get(0));
-                    eliminateCandidates(grid);
+        boolean cellsSolved;
+        do {
+            cellsSolved = false;
+            for (int row = 0; row < 9; row++) {
+                for (int col = 0; col < 9; col++) {
+                    Cell cell = grid.getCells()[row][col];
+                    if (!cell.isSolved() && cell.getNumCandidates() == 1) {
+                        cell.setSolution(cell.getCandidates().get(0));
+                        cellsSolved = true;
+                    }
                 }
             }
-        }
+        } while (cellsSolved);
     }
 
     /**
@@ -207,7 +175,6 @@ public class Solver {
                 for(Integer candidate : map.keySet()) {
                     if(map.get(candidate).size() == 1) {
                         map.get(candidate).get(0).setSolution(candidate);
-                        eliminateCandidates(grid);
                     }
                 }
             }
