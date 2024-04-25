@@ -14,7 +14,13 @@ public class Solver {
 
     public static void main(String[] args) {
         try {
-            ArrayList<Grid> grids = loadGrids(new File("data/grids.txt"));
+            String pathname;
+            if(args.length == 1) {
+                pathname = args[0];
+            } else {
+                pathname = "data/grids.txt";
+            }
+            ArrayList<Grid> grids = loadGrids(new File(pathname));
             solveAll(grids);
         } catch (IOException e) { e.printStackTrace(); }
     }
@@ -86,15 +92,70 @@ public class Solver {
      */
     public static void eliminateCandidates(Grid grid) {
         lockedCandidatesElimination(grid);
+        nakedSetElimination(grid);
     }
 
     /**
-     * Calls each solution-finding method in turn.
+     * Calls each solution-finding method until neither can find any more solutions.
      * @param grid: Grid in which to find solutions
      */
     public static void findSolutions(Grid grid) {
-        soleCandidateSolving(grid);
-        uniqueCandidateSolving(grid);
+        do {
+            // loop in method which exits when no more solutions can be found
+            soleCandidateSolving(grid);
+            //if uniqueCandidateSolving does not find any more solutions, exit
+        } while (uniqueCandidateSolving(grid));
+    }
+
+
+    /**
+     * Finds solved cells using the sole candidate rule:
+     * When a cell only has one candidate, then it must be the solution.
+     * This method loops through each unsolved cell in the grid and checks
+     * for sole candidates. It will continue looking for sole candidates to
+     * solve until there are none left.
+     * @param grid: Grid in which to find solutions
+     */
+    public static void soleCandidateSolving(Grid grid) {
+        boolean cellsSolved;
+        do {
+            cellsSolved = false;
+            for (int row = 0; row < 9; row++) {
+                for (int col = 0; col < 9; col++) {
+                    Cell cell = grid.getCells()[row][col];
+                    if (!cell.isSolved() && cell.getNumCandidates() == 1) {
+                        cell.setSolution(cell.getCandidates().get(0));
+                        cellsSolved = true;
+                    }
+                }
+            }
+        } while (cellsSolved);
+    }
+
+    /**
+     * Finds solved cells using the unique candidate rule:
+     * If a number can only be put in one cell in a group, then that cell's
+     * value is guaranteed to be that number. This method searches for candidates
+     * that only exist in one cell in a group and solves those cells.
+     * @param grid: Grid in which to find solutions
+     * @return: true if one or more cells are solved by the method
+     */
+    public static boolean uniqueCandidateSolving(Grid grid) {
+        boolean cellsSolved = false;
+        for(Group[] category : grid.getAllGroups()) {
+            for(Group group : category) {
+                // key = candidate, value = list of cells with candidate
+                HashMap<Integer, ArrayList<Cell>> map = getCandidateCellMap(group.getCells());
+                // check for single occurrences of candidates
+                for(Integer candidate : map.keySet()) {
+                    if(map.get(candidate).size() == 1) {
+                        map.get(candidate).get(0).setSolution(candidate);
+                        cellsSolved = true;
+                    }
+                }
+            }
+        }
+        return cellsSolved;
     }
 
     /**
@@ -171,47 +232,16 @@ public class Solver {
     }
 
     /**
-     * Finds solved cells using the sole candidate rule:
-     * When a cell only has one candidate, then it must be the solution.
-     * This method loops through each unsolved cell in the grid and checks
-     * for sole candidates. It will continue looking for sole candidates to
-     * solve until there are none left.
-     * @param grid: Grid in which to find solutions
+     * If two cells in a group contain an identical pair of candidates and only those two
+     * candidates, then no other cells in that group could be those values.
+     * @param grid
      */
-    public static void soleCandidateSolving(Grid grid) {
-        boolean cellsSolved;
-        do {
-            cellsSolved = false;
-            for (int row = 0; row < 9; row++) {
-                for (int col = 0; col < 9; col++) {
-                    Cell cell = grid.getCells()[row][col];
-                    if (!cell.isSolved() && cell.getNumCandidates() == 1) {
-                        cell.setSolution(cell.getCandidates().get(0));
-                        cellsSolved = true;
-                    }
-                }
-            }
-        } while (cellsSolved);
-    }
-
-    /**
-     * Finds solved cells using the unique candidate rule:
-     * If a number can only be put in one cell in a group, then that cell's
-     * value is guaranteed to be that number. This method searches for candidates
-     * that only exist in one cell in a group and solves those cells.
-     * @param grid: Grid in which to find solutions
-     */
-    public static void uniqueCandidateSolving(Grid grid) {
+    public static void nakedSetElimination(Grid grid) {
+        // naked pair solving
         for(Group[] category : grid.getAllGroups()) {
             for(Group group : category) {
-                // key = candidate, value = list of cells with candidate
                 HashMap<Integer, ArrayList<Cell>> map = getCandidateCellMap(group.getCells());
-                // check for single occurrences of candidates
-                for(Integer candidate : map.keySet()) {
-                    if(map.get(candidate).size() == 1) {
-                        map.get(candidate).get(0).setSolution(candidate);
-                    }
-                }
+                
             }
         }
     }
